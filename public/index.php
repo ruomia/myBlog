@@ -47,3 +47,23 @@ function view($viewFileName, $data = [])
     //加载视图
     require_once(ROOT . 'views/' . $path);
 }
+
+// 获取当前URL 上所有的参数，并且还能排除掉某些参数
+// 参数：要排除的变量
+function getUrlParams($except = [])
+{
+    foreach($except as $v)
+    {
+        unset($_GET[$v]);
+        //unset($_GET['odby])
+        //unset($_GET[odway])
+    }
+    //拼出：keyword=abc&is_show=1
+    $str = '';
+    foreach($_GET as $k => $v)
+    {
+        $str .= "$k=$v&";
+    }
+
+    return $str;
+}
