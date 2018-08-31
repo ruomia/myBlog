@@ -97,7 +97,7 @@ class Blog
     }
     public function contentHtml()
     {
-        $stmt = $this->pdo->query('SELECT * FROM blogs limit 10');
+        $stmt = $this->pdo->query('SELECT * FROM blogs');
         $blogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // 开启缓冲区
@@ -134,5 +134,14 @@ class Blog
         $str = ob_get_contents();
         file_put_contents(ROOT . 'public/index.html', $str);
         ob_clean();
+    }
+
+    //从数据库中取出日志的浏览量
+    public function getDisplay($id)
+    {
+        $sql = "SELECT display FROM blogs WHERE id=?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch( PDO::FETCH_COLUMN );
     }
 }
