@@ -5,6 +5,6 @@ class IndexController
 {
     public function index()
     {
-        return 'index';
+        view('index.index');
     }
 }

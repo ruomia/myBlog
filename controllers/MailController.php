@@ -7,14 +7,11 @@ class MailController
 {
     public function send()
     {
-        $redis = new \Predis\Client([
-            'scheme' => 'tcp',
-            'host' => '127.0.0.1',
-            'port' => 6379,
-        ]);
+        $redis = \libs\Redis::getInstance();
 
         $mailer = new Mail;
         //设置php 永不超时
+        ini_set("default_socket_timeout", -1);
 
         echo "发邮件队列启动成功..\r\n";
 

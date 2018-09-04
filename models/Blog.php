@@ -1,19 +1,11 @@
 <?php
 namespace models;
 
-use PDO;
-class Blog
+class Blog extends Base
 {
-    public $pdo;
-    public function __construct()
-    {
-        $this->pdo = new PDO('mysql:host=127.0.0.1;dbname=blog', 'root', '123456');
-        $this->pdo->exec('SET NAMES utf8');
-    }
+
     public function search()
     {
-        $pdo = new PDO('mysql:host=localhost;dbname=blog', 'root', '123456');
-        $pdo->exec('SET NAMES utf8');
 
         $where = 1;
         //放预处理对应的值
@@ -62,7 +54,7 @@ class Blog
         $offset = ($page-1)*$perpage;
         //取出总的记录数
         $sql = "SELECT COUNT(*) FROM blogs WHERE $where";
-        $stmt = $pdo->prepare($sql);
+        $stmt = self::$pdo->prepare($sql);
         $stmt->execute($value);
         $count = $stmt->fetch( PDO::FETCH_COLUMN);
         //计算总的页数 
@@ -82,7 +74,7 @@ class Blog
         $sql = "SELECT * FROM blogs WHERE $where ORDER BY $odby $odway LIMIT $offset,$perpage";
         // echo $sql;die;
         //预处理sql
-        $stmt = $pdo->prepare($sql);
+        $stmt = self::$pdo->prepare($sql);
         // 执行sql
         $stmt->execute($value);
         // 取数据
@@ -97,7 +89,7 @@ class Blog
     }
     public function contentHtml()
     {
-        $stmt = $this->pdo->query('SELECT * FROM blogs');
+        $stmt = self::$pdo->query('SELECT * FROM blogs');
         $blogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // 开启缓冲区
@@ -123,7 +115,7 @@ class Blog
     public function indexHtml()
     {
         $sql = "SELECT * FROM blogs WHERE is_show=1 ORDER BY id desc LIMIT 20";
-        $stmt = $this->pdo->query($sql);
+        $stmt = self::$pdo->query($sql);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         ob_start();
@@ -142,11 +134,7 @@ class Blog
 
         
         //连接Redis
-        $redis = new \Predis\Client([
-            'scheme' => 'tcp',
-            'host' => '127.0.0.1',
-            'port' => 6379,
-        ]);
+        $redis = \libs\Reids::getInstance();
 
         //判断blog_display 这个hash中有没有一个键是 blog-$id
         $key = "blog-{$id}";
@@ -161,7 +149,7 @@ class Blog
         {
             //从数据库中取出浏览量
             $sql = "SELECT display FROM blogs WHERE id=?";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
             $stmt->execute([$id]);
             $display = $stmt->fetch( PDO::FETCH_COLUMN );
             $display++;
@@ -189,7 +177,7 @@ class Blog
             // var_dump($id,$display);
             // echo '<br>';
             $sql = "UPDATE blogs set display= {$v} WHERE id = {$id}";
-            $this->pdo->exec($sql);
+            self::$pdo->exec($sql);
         }
     }
 }

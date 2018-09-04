@@ -37,4 +37,11 @@ class BlogController
         $blog = new Blog;
         $blog->displayToDb();
     }
+
+    public function test()
+    {
+        $log =  new \libs\Log('new');
+        $log->log('贵有恒，何必三更起五更眠');
+        echo '发表成功';
+    }
 }

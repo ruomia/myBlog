@@ -77,3 +77,15 @@ function getUrlParams($except = [])
 
     return $str;
 }
+// 加载配置文件
+function config($name)
+{
+    //静态局部变量
+    static $config = null;
+    if($config === null)
+    {
+        $config = require(ROOT . 'config.php');
+    }
+    
+    return $config[$name];
+}

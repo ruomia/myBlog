@@ -4,14 +4,6 @@ namespace controllers;
 use models\User;
 class UserController
 {
-    public function hello()
-    {
-        echo 'hello';
-    }
-    public function world()
-    {
-        echo 'world';
-    }
     public function register()
     {
         view('users.add');
@@ -21,15 +13,18 @@ class UserController
         //1. 接收表单
         $email = $_POST['email'];
         $password = md5($_POST['password']);
+      
+        // 2. 生成激活码(32位的随机的字符串)
+        $code = md5( rand(1,99999) );
+        $redis = \libs\Redis::getInstance();
 
-        //2. 插入到数据库中
-        $user = new User;
-        $ret = $user->add($email, $password);
-        if(!$ret)
-        {
-            die("注册失败！");
-        }
-        //3. 把消息放到队列中
+        //序列化
+        $value = json_encode([
+            'email' =>  $email,
+            'password' => $password,
+        ]);
+        $key = "temp_user:{$code}";
+        $redis->setex($key, 300, $value);
 
         // 从邮箱地址中取出姓名
         $name = explode('@', $email);
@@ -39,20 +34,47 @@ class UserController
 
         //构造消息数组
         $message = [
-            'title' => '欢迎加入全栈1班',
-            'content' => "点击一下链接进行激活：<br> <a href=''>点击激活</a>。",
+            'title' => '账号激活',
+            'content' => "点击以下链接进行激活：<br> 
+            <a href='http://localhost:9000/user/active_user?code={$code}'>http://localhost:9000/user/active_user?code={$code}</a>
+            <p>如果无法跳转，请复制链接用浏览器进行访问。。</p> ",
             'from' => $from,
         ];
         //把消息转成字符串（JSON ==> 序列化）
         $message = json_encode($message);
         //放到队列中
-        $redis = new \Predis\Client([
-            'scheme' => 'tcp',
-            'host' => '127.0.0.1',
-            'port' => 6379,
-        ]);
+        $redis = \libs\Redis::getInstance();
         $redis->lpush('email', $message);
         echo 'ok';
 
+    }
+    public function active_user()
+    {
+        // 1.  接收激活码
+        $code = $_GET['code'];
+        // 2. 到 Redis取出账号
+        $redis = \libs\Redis::getInstance();
+        // 拼出名字
+        $key = 'temp_user:'.$code;
+        //取出数据
+        $data = $redis->get($key);
+        if($data)
+        {
+            // 从redis 中删除激活码
+            $redis->del($key);
+            //反序列化
+            $data = json_decode($data, true);
+            //插入到数据库中
+            $user = new \models\User;
+            $user->add($data['email'], $data['password']);
+            
+            echo '账号激活成功！请登录。。。';
+
+        }
+        else
+        {
+            die('激活码无效！');
+        }
+        
     }
 }
