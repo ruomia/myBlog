@@ -5,6 +5,21 @@ use PDO;
 
 class MockController
 {
+    public function users()
+    {
+        $pdo = new PDO('mysql:host=localhost;dbname=blog','root','123456');
+        $pdo->exec('SET NAMES utf8');
+
+        //清空表，并且重置 ID
+        $pdo->exec('TRUNCATE users');
+        for($i=0;$i<20;$i++)
+        {
+            $email = rand(500000,9999999).'@126.com';
+            $password = md5('123123');
+            $sql = "INSERT INTO users (email,password) VALUES('{$email}','{$password}')";
+            $pdo->exec($sql);
+        }
+    }
     public function blog()
     {
         $pdo = new PDO('mysql:host=localhost;dbname=blog','root','123456');
@@ -18,9 +33,11 @@ class MockController
             $content = $this->getChar(rand(100, 600));
             $display = rand(10,500);
             $is_show = rand(0, 1);
+            
             $date = rand(1233333399,1535592288);
             $date = date('Y-m-d H:i:s', $date);
-            $sql = "INSERT INTO blogs (title, content, display,is_show, created_at) VALUE('$title','$content',$display,$is_show,'$date')";
+            $user_id = rand(1,20);
+            $sql = "INSERT INTO blogs (title, content, display,is_show, created_at, `user_id`) VALUES('$title','$content',$display,$is_show,'$date','{$user_id}')";
             $pdo->exec($sql);
         }
     }

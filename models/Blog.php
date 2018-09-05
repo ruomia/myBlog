@@ -1,6 +1,6 @@
 <?php
 namespace models;
-
+use PDO;
 class Blog extends Base
 {
 
@@ -74,13 +74,15 @@ class Blog extends Base
         $sql = "SELECT * FROM blogs WHERE $where ORDER BY $odby $odway LIMIT $offset,$perpage";
         // echo $sql;die;
         //预处理sql
-        $stmt = self::$pdo->prepare($sql);
+        // $stmt = self::$pdo->prepare($sql);
         // 执行sql
-        $stmt->execute($value);
+        // $stmt->execute($value);
+        $data = $this->findAll($sql,$value);
         // 取数据
         // $data = $stmt->errorInfo();
-        // var_dump($data);die;
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // var_dump($stmt);
+        // $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
         return [
             'btns'=>$btns,
@@ -89,8 +91,7 @@ class Blog extends Base
     }
     public function contentHtml()
     {
-        $stmt = self::$pdo->query('SELECT * FROM blogs');
-        $blogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $blogs = $this->findAll('SELECT * FROM blogs');
 
         // 开启缓冲区
         ob_start();
@@ -115,8 +116,7 @@ class Blog extends Base
     public function indexHtml()
     {
         $sql = "SELECT * FROM blogs WHERE is_show=1 ORDER BY id desc LIMIT 20";
-        $stmt = self::$pdo->query($sql);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data = $this->findAll($sql);
 
         ob_start();
 
@@ -179,5 +179,46 @@ class Blog extends Base
             $sql = "UPDATE blogs set display= {$v} WHERE id = {$id}";
             self::$pdo->exec($sql);
         }
+    }
+    // public function add($title,$content,$is_show)
+    // {
+    //     $sql = "INSERT INTO blogs (title,content,is_show,user_id) VALUES(?,?,?,?)";
+    //     $data = [
+    //         $title,
+    //         $content,
+    //         $is_show,
+    //         $_SESSION['id']
+    //     ];
+    //     $stmt = $this->getFirstField($sql,$data);
+    //     if(!$ret)
+    //     {
+    //         echo '失败';
+    //         $error = $stmt->errorInfo();
+    //         echo '<pre>';
+    //         var_dump($error);
+    //         exit;
+    //     }
+    //     return $stmt;
+    // }
+    public function add($title,$content,$is_show)
+    {
+        $stmt = self::$pdo->prepare("INSERT INTO blogs(title,content,is_show,user_id) VALUES(?,?,?,?)");
+        $ret = $stmt->execute([
+            $title,
+            $content,
+            $is_show,
+            $_SESSION['id'],
+        ]);
+        if(!$ret)
+        {
+            echo '失败';
+            // 获取失败信息
+            $error = $stmt->errorInfo();
+            echo '<pre>';
+            var_dump( $error); 
+            exit;
+        }
+        // 返回新插入的记录的ID
+        return self::$pdo->lastInsertId();
     }
 }

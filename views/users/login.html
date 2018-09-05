@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <?php view('common.nav') ?>
+    <form action="/user/doLogin" method="post">
+        <div>
+            <label for="">邮箱：</label>
+            <input type="email" name="email" id="">
+        </div>
+        <div>
+            <label for="">密码：</label>
+            <input type="password" name="password" id="">
+        </div>
+        <input type="submit" value="登录">
+    </form>
+    <?php view('common.footer') ?>
+</body>
+</html>

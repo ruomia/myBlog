@@ -4,6 +4,22 @@ namespace controllers;
 use models\Blog;
 class BlogController
 {
+    public function create()
+    {
+        view('blogs.create');
+    }
+    public function store()
+    {
+        $title = $_POST['title'];
+        $content = $_POST['content'];
+        $is_show = $_POST['is_show'];
+
+        $blog = new Blog;
+        $blog->add($title,$content,$is_show);
+        
+        message('发表成功！', 2, '/blog/index');
+    }
+
     public function index()
     {
         $blog = new Blog;
@@ -12,6 +28,7 @@ class BlogController
         // var_dump($data);
         view('blogs.index',$data);
     }
+    
 
     public function content_to_html(){
         $blog = new Blog;
