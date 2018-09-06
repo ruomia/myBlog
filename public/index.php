@@ -5,6 +5,20 @@ ini_set('session.save_handler', 'redis');
 ini_set('session.save_path', 'tcp://127.0.0.1:6379?database=3');
 
 session_start();
+
+// 如果用户以 POST 方式访问网站时，需要验证令牌
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    if(!isset($_POST['_token']))
+    {
+        die('违法操作！');
+    }
+    if($_POST['_token'] != $_SESSION['token'])
+    {
+        die('违法操作！');
+    }
+}
+// var_dump($_SESSION['token']);
 //定义常量
 define('ROOT', dirname(__FILE__) . '/../');
 
@@ -129,4 +143,40 @@ function message($message, $type, $url, $seconds = 5)
         // 跳转到下一个页面
         redirect($url);
     }
+}
+// 过滤 XSS （在线编辑器填写的内容不能使用该函数过滤）
+function e($content)
+{
+    return htmlspecialchars($content);
+}
+// 使用 htmlpurifer 过滤 （因为性能慢，这个函数只能
+// 使用在线编辑器填写的内容的字段上，其他字段使用上面的e函数过滤）
+function hpe($content)
+{
+    // 一直保存在内存中（直到脚本执行结束）
+    static $purifier = null;
+    // 只有第一次调用时才会创建新的对象
+    if($purifier === null)
+    {
+        $config = \HTMLPurifier_Config::createDefault();
+        $config->set('Core.Encoding', 'utf-8');
+        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+        $config->set('Cache.SerializerPath', ROOT.'storage/cache');
+        $config->set('HTML.Allowed', 'div,b,strong,i,em,a[href|title],ul,ol,ol[start],li,p[style],br,span[style],img[width|height|alt|src],*[style|class],pre,hr,code,h2,h3,h4,h5,h6,blockquote,del,table,thead,tbody,tr,th,td');
+        $config->set('CSS.AllowedProperties', 'font,font-size,font-weight,font-style,margin,width,height,font-family,text-decoration,padding-left,color,background-color,text-align');
+        $config->set('AutoFormat.AutoParagraph', TRUE);
+        $config->set('AutoFormat.RemoveEmpty', TRUE);
+        $purifier = new \HTMLPurifier($config);
+    }
+    return $purifier->purify($content);
+}
+function csrf()
+{
+    if(!isset($_SESSION['token']))
+    {
+        // 生成一个随机字符串
+        $token = md5( rand(1,99999). microtime() );
+        $_SESSION['token'] = $token;
+    }
+    return $_SESSION['token'];
 }

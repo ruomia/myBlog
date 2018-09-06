@@ -28,7 +28,13 @@ class BlogController
         // var_dump($data);
         view('blogs.index',$data);
     }
-    
+    public function del()
+    {
+        $id = $_POST['id'];
+        $blog = new Blog;
+        $blog->delete($id);
+        message('删除成功', 2, '/blog/index');
+    }
 
     public function content_to_html(){
         $blog = new Blog;

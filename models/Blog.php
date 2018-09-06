@@ -6,8 +6,8 @@ class Blog extends Base
 
     public function search()
     {
-
-        $where = 1;
+        // 取出当前用户的日志
+        $where = 'user_id='.$_SESSION['id'];
         //放预处理对应的值
         $value = [];
         if(isset($_GET['keyword']) && $_GET['keyword']){
@@ -89,6 +89,15 @@ class Blog extends Base
             'data'=>$data
         ];
     }
+    public function delete($id)
+    {
+        $sql = 'DELETE FROM blogs WHERE id = ? and user_id = ?';
+        $data = [
+            $id,
+            $_SESSION['id'],
+        ];
+        return $this->exec($sql,$data);
+    }
     public function contentHtml()
     {
         $blogs = $this->findAll('SELECT * FROM blogs');
@@ -134,7 +143,7 @@ class Blog extends Base
 
         
         //连接Redis
-        $redis = \libs\Reids::getInstance();
+        $redis = \libs\Redis::getInstance();
 
         //判断blog_display 这个hash中有没有一个键是 blog-$id
         $key = "blog-{$id}";

@@ -12,7 +12,7 @@ class UploadController
         $name = time();
 
         //移动图片
-        move_uploaded_file($file['tmp_name'], ROOT . 'public/uploads'.$name.'.png');
+        move_uploaded_file($file['tmp_name'], ROOT . 'public/uploads/'.$name.'.png');
 
         /*
         {

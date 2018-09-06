@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <style>
         .active {
             color: #ff0000;
@@ -28,7 +29,7 @@
         <input type="submit" value="搜索">
     </form>
     <br>
-    <table border="1">
+    <table class="table">
         <tr>
             <th>ID</th>
             <th width="40%">标题</th>
@@ -45,17 +46,17 @@
             <th>是否显示</th>
             <th>操作</th>
         </tr>
-        <?php foreach($data as $d): ?>
+        <?php foreach($data as $k=>$d): ?>
         <tr>
             <td><?= $d['id'] ?></td>
-            <td><?= $d['title'] ?></td>
+            <td style="word-break: break-all;"><a href="/contents/<?=$d['id']?>.html"><?= e($d['title']) ?></a></td>
             <td><?= $d['created_at'] ?></td>
             <td><?= $d['updated_at'] ?></td>
             <td><?= $d['display'] ?></td>
             <td><?= $d['is_show']==1?'显示':'不显示' ?></td>
             <td>
                 <a href="">修改</a>
-                <a href="">删除</a>
+                <a href="javascript:;" name="<?=$d['id']?>" class="_delete">删除</a>
             </td>
         </tr>
         <?php endforeach; ?>
@@ -65,5 +66,14 @@
     <?=$btns?>
 
     <?php view('common.footer') ?>
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script>
+        $('._delete').click(function(){
+            var id = $(this).attr('name');
+            var token = '<?=csrf()?>';
+            $.post('/blog/del',{id: id,_token: token},function(data){window.location.reload()});
+        })
+    </script>
 </body>
 </html>
