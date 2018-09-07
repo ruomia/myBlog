@@ -4,6 +4,34 @@ use PDO;
 class Blog extends Base
 {
 
+    public function find($id)
+    {
+        $sql = "SELECT * FROM blogs WHERE id = ?";
+        return $this->findRow($sql,[$id]);
+    }
+    /**
+     * 为某一个日志生成静态页面
+     * 参数：日志的ID
+     */
+    public function makeHtml($id)
+    {
+        // 1. 取出日志的信息
+        $blog = $this->find($id);
+        // 2. 打开缓冲区、并加载视图文件
+        ob_start();
+        view('blogs.content',[
+            'blog' => $blog,
+        ]);
+        // 3. 从缓冲区取出视图并写道静态页中
+        $str = ob_get_clean();
+        file_put_contents(ROOT.'public/contents/'.$id.'.html', $str);
+
+    }
+    //删除静态页
+    public function deleteHtml($id)
+    {
+        @unlink(ROOT.'public/contents/'.$id.'.html');
+    }
     public function search()
     {
         // 取出当前用户的日志
@@ -89,6 +117,7 @@ class Blog extends Base
             'data'=>$data
         ];
     }
+    
     public function delete($id)
     {
         $sql = 'DELETE FROM blogs WHERE id = ? and user_id = ?';
@@ -97,6 +126,18 @@ class Blog extends Base
             $_SESSION['id'],
         ];
         return $this->exec($sql,$data);
+    }
+    public function update($title,$content,$is_show,$id)
+    {
+        $sql = "UPDATE blogs SET title=?, content=?, is_show=? WHERE id=?";
+        $data = [
+            $title,
+            $content,
+            $is_show,
+            $id,
+        ];
+        return $this->exec($sql,$data);
+
     }
     public function contentHtml()
     {

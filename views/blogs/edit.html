@@ -6,23 +6,24 @@
 </head>
 <body>
     <?php view('common.nav') ?>
-    <h1>添加日志</h1>
-    <form action="/blog/store" method="post">
-        <input type="hidden" name="_token" value="<?=csrf()?>">
+    <h1>修改日志</h1>
+    <form action="/blog/update" method="post">
+        <?php csrf_field() ?>
+        <input type="hidden" name="id" value="<?=$data['id']?>">
         <div>
             <label for="">标题：</label>
-            <input type="text" name="title" id="">
+            <input type="text" name="title" value="<?=$data['title']?>">
         </div>
         <div>
             <label for="">内容：</label>
-            <textarea name="content" id="content" cols="30" rows="10"></textarea>      
+            <textarea name="content" id="content" cols="30" rows="10"><?=$data['content']?></textarea>      
         </div>
         <div>
             <label for="">是否公开：</label>
-            <input type="radio" name="is_show" id="" value="1">公开
-            <input type="radio" name="is_show" id="" value="0">私有
+            <input type="radio" name="is_show" id="" value="1" <?php if($data['is_show']==1) echo 'checked'; ?>>公开
+            <input type="radio" name="is_show" id="" value="0" <?php if($data['is_show']==0) echo 'checked'; ?>>私有
         </div>
-        <input type="submit" value="添加">
+        <input type="submit" value="修改">
     </form>
     <?php view('common.footer') ?>
 

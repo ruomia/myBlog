@@ -19,11 +19,17 @@ class Base
 
     public function exec($sql,$data=[])
     {
-        // var_dump($sql);
+        // var_dump($sql,$data);die;
         $stmt = self::$pdo->prepare($sql);
         //通过execute 绑定数据
-        // var_dump();
-        return $stmt->execute($data);
+  
+       $ret = $stmt->execute($data);
+       if(!$ret)
+       {
+           $error = self::$pdo->errorInfo();
+           return $error;
+       }
+       return $ret;
 
     }
     public function findAll($sql,$data=[])

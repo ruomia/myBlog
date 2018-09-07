@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title><?=e($blog['title'])?></title>
-    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
-    <?php view('common.nav') ?>
+    <h1>日志系统</h1>
+    <ul class="nav nav-tabs"></ul>
 
     <h1><?=e($blog['title'])?></h1>
     <p>浏览量：<span id="display"></span></p>
@@ -15,14 +16,34 @@
     <?php view('common.footer') ?>
     <script src="/js/jquery-3.2.1.min.js"></script>
     <script>
+        // 更新浏览量，并且获取登录状态
         var id = "<?=$blog['id']?>";
         var url = "/blog/display?id="+id;
         $.ajax({
             type:"GET",
             url:url,
+            dataType: 'json',
             success:function(data){
                 //把返回的浏览量放到页面
-                $("#display").html(data);
+                $("#display").html(data.display);
+                // 拼按钮的字符串
+                // 无论登录否都有一个首页的按钮
+                var html = '<li role="presentation" ><a href="/">首页</a></li>';
+                // 判断登录
+                if(data.email == '')
+                {
+                    html += `<li role="presentation"><a href="/user/register">注册</a></li>
+                             <li role="presentation"><a href="/user/login">登录</a></li>`;
+                }
+                else
+                {
+                    html += `<li role="presentation" class="active"><a href="#">日志列表</a></li>
+                             <li role="presentation"><a href="/blog/create">发表日志</a></li>
+                             <li role="presentation"><a href="">${data.email}</a></li>
+                             <li role="presentation"><a href="/user/logout">退出</a></li>`;
+                }
+
+                $('.nav-tabs').html(html);
             }
         });
     </script>

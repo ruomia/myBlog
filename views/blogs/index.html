@@ -26,7 +26,7 @@
         <input type="radio" name="is_show" value="" <?php if(@$_GET['is_show']!='1' && @$_GET['is_show']!=='0') echo 'checked' ?> >全部
         <input type="radio" name="is_show" value="1" <?php if(@$_GET['is_show']=='1') echo 'checked' ?> >显示
         <input type="radio" name="is_show" value="0" <?php if(@$_GET['is_show']=='0') echo 'checked' ?> >不显示
-        <input type="submit" value="搜索">
+        <input type="submit" value="搜索" class="btn btn-default btn-xs">
     </form>
     <br>
     <table class="table">
@@ -49,14 +49,26 @@
         <?php foreach($data as $k=>$d): ?>
         <tr>
             <td><?= $d['id'] ?></td>
-            <td style="word-break: break-all;"><a href="/contents/<?=$d['id']?>.html"><?= e($d['title']) ?></a></td>
+            <td style="word-break: break-all;">
+                <?php if($d['is_show'] == 1): ?>
+                <a href="/contents/<?=$d['id']?>.html"><?= e($d['title']) ?></a>
+                <?php else: ?>
+                <a href="/blog/content?id=<?=$d['id']?>"><?= e($d['title']) ?></a>
+                <?php endif; ?>
+            </td>
             <td><?= $d['created_at'] ?></td>
             <td><?= $d['updated_at'] ?></td>
             <td><?= $d['display'] ?></td>
-            <td><?= $d['is_show']==1?'显示':'不显示' ?></td>
+            <td><?= $d['is_show']==1?'公开':'私有' ?></td>
             <td>
-                <a href="">修改</a>
-                <a href="javascript:;" name="<?=$d['id']?>" class="_delete">删除</a>
+                <a href="/blog/edit?id=<?=$d['id']?>" class="btn btn-warning btn-xs">修改</a>
+                <!-- <a href="javascript:;" name="<?=$d['id']?>" class="_delete">删除</a> -->
+                <form action="/blog/del" method="post">
+                    <?php csrf_field() ?>
+                    <input type="hidden" name="id" value="<?=$d['id']?>">
+                    <input type="submit" value="删除" class="btn btn-default btn-xs">
+                </form>
+
             </td>
         </tr>
         <?php endforeach; ?>
@@ -67,13 +79,13 @@
 
     <?php view('common.footer') ?>
 
-    <script src="/js/jquery-3.2.1.min.js"></script>
+    <!-- <script src="/js/jquery-3.2.1.min.js"></script> -->
     <script>
-        $('._delete').click(function(){
-            var id = $(this).attr('name');
-            var token = '<?=csrf()?>';
-            $.post('/blog/del',{id: id,_token: token},function(data){window.location.reload()});
-        })
+        // $('._delete').click(function(){
+        //     var id = $(this).attr('name');
+        //     var token = '<?=csrf()?>';
+        //     $.post('/blog/del',{id: id,_token: token},function(data){window.location.reload()});
+        // })
     </script>
 </body>
 </html>

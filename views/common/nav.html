@@ -1,5 +1,5 @@
 <?php if(isset($_SESSION['_MESS_'])): ?>
-<div id="_mess_" style="border:1px solid #66ccff;background-color: #b9ecbd;padding:5px;">
+<div id="_mess_" class="alert alert-success" role="alert">
     <?=$_SESSION['_MESS_'];?>
 </div>
 <?php unset($_SESSION['_MESS_']) ?>
@@ -17,15 +17,16 @@
 </script>
 <?php endif; ?>
 <h1>日志系统</h1>
-<a href="http://">首页</a>
-<a href="/blogs/index">日志列表</a>
+<ul class="nav nav-tabs">
+    <li role="presentation" ><a href="#">首页</a></li>
+    <li role="presentation" class="active"><a href="#">日志列表</a></li>
+    <li role="presentation"><a href="/blog/create">发表日志</a></li>
+    <?php if(isset($_SESSION['id'])): ?>
 
-<?php if(isset($_SESSION['id'])): ?>
-
-    <?=$_SESSION['email']?>
-    <a href="/user/logout">退出</a>
-<?php else: ?>
-    <a href="/user/register">注册</a>
-    <a href="/user/login">登录</a>
-<?php endif; ?>
-<hr>
+    <li role="presentation"><a href=""><?=$_SESSION['email']?></a></li>
+    <li role="presentation"><a href="/user/logout">退出</a></li>
+    <?php else: ?>
+    <li role="presentation"><a href="/user/register">注册</a></li>
+    <li role="presentation"><a href="/user/login">登录</a></li>
+    <?php endif; ?>
+</ul>

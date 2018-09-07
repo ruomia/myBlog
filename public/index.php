@@ -7,17 +7,17 @@ ini_set('session.save_path', 'tcp://127.0.0.1:6379?database=3');
 session_start();
 
 // 如果用户以 POST 方式访问网站时，需要验证令牌
-if($_SERVER['REQUEST_METHOD'] == 'POST')
-{
-    if(!isset($_POST['_token']))
-    {
-        die('违法操作！');
-    }
-    if($_POST['_token'] != $_SESSION['token'])
-    {
-        die('违法操作！');
-    }
-}
+// if($_SERVER['REQUEST_METHOD'] == 'POST')
+// {
+//     if(!isset($_POST['_token']))
+//     {
+//         die('违法操作！');
+//     }
+//     if($_POST['_token'] != $_SESSION['token'])
+//     {
+//         die('违法操作！');
+//     }
+// }
 // var_dump($_SESSION['token']);
 //定义常量
 define('ROOT', dirname(__FILE__) . '/../');
@@ -179,4 +179,10 @@ function csrf()
         $_SESSION['token'] = $token;
     }
     return $_SESSION['token'];
+}
+//生成令牌隐藏域
+function csrf_field()
+{
+    $csrf = isset($_SESSION['token']) ? $_SESSION['token'] : csrf();
+    echo "<input type='hidden' name='_token' value='{$csrf}' />";
 }
