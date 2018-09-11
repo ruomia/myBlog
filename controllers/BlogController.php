@@ -62,7 +62,7 @@ class BlogController
         $blog = new Blog;
         $data = $blog->search();
         // echo "<pre>";
-        // var_dump($data);
+        // var_dump($data);die;
         view('blogs.index',$data);
     }
     public function del()

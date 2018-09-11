@@ -1,0 +1,16 @@
+    <?php view('common.nav') ?>
+    <h2>充值</h2>
+    <form action="/user/doCharge" method="post" class="form-inline">
+        <?=csrf_field()?>
+        <div class="form-group">
+            <label for="money">充值金额：</label>
+            <div class="input-group">
+              <div class="input-group-addon">￥</div>
+              <input type="number" name="money" class="form-control" id="money">
+            </div>
+          </div>
+        <button type="submit" class="btn btn-primary">确定</button>
+    </form>
+    <?php view('common.footer') ?>
+</body>
+</html>

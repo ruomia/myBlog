@@ -20,6 +20,7 @@ class User extends Base
         {
             $_SESSION['id'] = $user['id'];
             $_SESSION['email'] = $user['email'];
+            $_SESSION['money'] = $user['money'];
             return TRUE;
         }
         else
@@ -28,5 +29,28 @@ class User extends Base
         }
         
     }
+    public function addMoney($money,$userId)
+    {
+        $sql = "UPDATE users SET money=money+? WHERE id=?";
+        return $this->exec($sql,[
+            $money,
+            $userId
+        ]);
+ 
+    }
+
+   // 获取余额
+   public function getMoney()
+   {
+       $id = $_SESSION['id'];
+   
+        $sql = "SELECT money FROM users WHERE id = ?";
+        $money = $this->getFirstFeild($sql,[$id]);
+        // 保存到 Redis
+        $_SESSION['money'] = $money;
+        return $money;
+       
+   }
+
 
 }

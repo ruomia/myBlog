@@ -2,8 +2,36 @@
 namespace controllers;
 
 use models\User;
+use models\Order;
 class UserController
 {
+    public function money()
+    {
+        $user = new User;
+        $user->getMoney();
+        return 'fasdfas';
+    }
+    public function getNumber()
+    {
+        return '123123';
+    }
+    public function orders()
+    {
+        $order = new Order;
+        $data = $order->search();
+        view('users.order',$data);
+    }
+    public function charge()
+    {
+        view('users.charge');
+    }
+    public function doCharge()
+    {
+        $money = $_POST['money'];
+        $order = new Order;
+        $order->create($money);
+        message('充值订单已生成，请立即支付！', 2, '/user/orders');
+    }
     public function login()
     {
         view('users.login');
