@@ -5,6 +5,27 @@ use models\User;
 use models\Order;
 class UserController
 {
+    public function orderStatus()
+    {
+        $sn = $_GET['sn'];
+        // 尝试次数
+        $try = 10; 
+        $order = new Order;
+        do{
+            $data = $order->findBySn($sn);
+            if($data['status'] == 0)
+            {
+                sleep(1);
+                $try--;
+            }
+            else
+            {
+                break;
+            }
+        }while($try>0);
+        
+        echo  $data['status'];
+    }
     public function money()
     {
         $user = new User;

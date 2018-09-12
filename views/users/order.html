@@ -27,6 +27,11 @@
                     <input type="hidden" name="sn" value="<?=$v['sn']?>">
                     <input type="submit" value="点击支付" class="btn btn-default btn-xs">
                 </form>
+                <form target="_blank" action="/wxpay/pay" method="post">
+                    <?php csrf_field() ?>
+                    <input type="hidden" name="sn" value="<?=$v['sn']?>">
+                    <input type="submit" value="微信支付" class="btn btn-default btn-xs">
+                </form>
                 <?php endif; ?>
             </td>
         </tr>
